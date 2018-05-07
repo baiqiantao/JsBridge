@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSBridge Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.12.4/jquery.js"></script>
+
+    <style type="text/css">
+        .btn {
+            background-color: #aaa;
+            height: 40px;
+            display: wrap;
+            justify-content: center;
+            align-items: center;
+            color: #444444;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        #response {
+            background: #eeeeee;
+            word-wrap: break-word;
+            display: block;
+            outline: 1px solid #ccc;
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+<p style="color: red">嵌入页区域</p>
+<p>以JSBridge的方式实现</p>
+<button class="btn" id="deviceInfo">获取设备信息</button>
+<button class="btn" id="backNative">关闭当前页面</button>
+<button class="btn" id="showLoadingAnimation">显示原生弹出等待框</button>
+<button class="btn" id="stopLoadingAnimation">关闭原生弹出等待框</button>
+<button class="btn" id="showErrorHUD">显示原生错误提示框</button>
+<button class="btn" id="takePhoto">拍照返回图片</button>
+<button class="btn" id="nativeRequest">调用原生请求</button>
+<button class="btn" id="scanQrcode">扫描二维码并返回扫描结果</button>
+<button class="btn" id="downloadFile">下载附件</button>
+<button class="btn" id="openWeb">打开新界面</button>
+<button class="btn" id="getLocation">获取位置信息</button>
+
+<pre id="response"></pre>
+
+<script type="text/javascript">
+    /**
+     * 初始化jsbridge
+     * @param readyCallback 初始化完成后的回调
+     */
+    function initJsBridge(readyCallback) {
+        var u = navigator.userAgent;
+        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+
+        // 注册jsbridge
+        function connectWebViewJavascriptBridge(callback) {
+            if (isAndroid) {
+                if (window.WebViewJavascriptBridge) {
+                    callback(WebViewJavascriptBridge)
+                } else {
+                    document.addEventListener(
+                        'WebViewJavascriptBridgeReady'
+                        , function () {
+                            callback(WebViewJavascriptBridge)
+                        },
+                        false
+                    );
+                }
+                return;
+            }
+
+            if (isiOS) {
+                if (window.WebViewJavascriptBridge) {
+                    return callback(WebViewJavascriptBridge);
+                }
+                if (window.WVJBCallbacks) {
+                    return window.WVJBCallbacks.push(callback);
+                }
+                window.WVJBCallbacks = [callback];
+                var WVJBIframe = document.createElement('iframe');
+                WVJBIframe.style.display = 'none';
+                WVJBIframe.src = 'https://__bridge_loaded__';
+                document.documentElement.appendChild(WVJBIframe);
+                setTimeout(function () {
+                    document.documentElement.removeChild(WVJBIframe)
+                }, 0)
+            }
+        }
+
+        // 调用注册方法
+        connectWebViewJavascriptBridge(function (bridge) {
+            if (isAndroid) {
+                bridge.init(function (message, responseCallback) {
+                    console.log('JS got a message', message);
+                    responseCallback(data);
+                });
+            }
+
+            bridge.registerHandler('jsbridge_showMessage', function (data, responseCallback) {
+                showResponse(data);
+            });
+
+            bridge.registerHandler('jsbridge_getJsMessage', function (data, responseCallback) {
+                showResponse(data);
+                responseCallback('native 传过来的是：' + data);
+            });
+
+            readyCallback();
+        });
+    }
+
+    /**
+     * 显示响应信息
+     * @param response 响应信心
+     */
+    function showResponse(response) {
+
+        $('#response').text(response);
+
+        console.log(response);
+
+    }
+
+    /**
+     * jQuery
+     */
+    $(function () {
+        // 首先调用JSBridge初始化代码，完成后再设置其他
+        initJsBridge(function () {
+            $("#deviceInfo").click(function () {
+
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('deviceInfo', null, function (response) {
+                    showResponse(response);
+                    alert(response);
+                });
+            });
+
+            $('#backNative').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('backNative', null, function (response) {
+                    showResponse(response);
+                });
+            });
+
+            $('#showLoadingAnimation').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('showLoadingAnimation', {
+                    "alertContent": "加载中"
+                }, function (response) {
+                    showResponse(response);
+                });
+            });
+
+
+            $('#stopLoadingAnimation').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('stopLoadingAnimation', null, function (response) {
+                    showResponse(response);
+                });
+            });
+
+            $('#showErrorHUD').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('showErrorHUD', {
+                    "type": "dialog",
+                    "errorMess": "没有权限查看用户信息"
+                }, function (response) {
+                    showResponse(response);
+                });
+            });
+
+                $('#nativeRequest').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                  <!--window.WebViewJavascriptBridge.callHandler('nativeRequest',-->
+                  <!--JSON.stringify({"requstSource":"internetRequest","url":"http://mpoc.icitic.net/mstep/auth.do?act=UPassword","params":JSON.stringify({"method_Name":"checkUserPassword","password":111111,"remPwd":1,"token":"","userId":842546})}),-->
+                  <!--function (response) {-->
+                    <!--showResponse(response);-->
+                  <!--});-->
+
+                    window.WebViewJavascriptBridge.callHandler('nativeRequest',
+                  JSON.stringify({"requstSource":"internetRequest","url":"http://whichat.icitic.net/mstep/notEncrypt.do?act=getHeadImg&userId=","params":JSON.stringify({"method_Name":"checkUserPassword","password":111111,"remPwd":1,"token":"","userId":842546})}),
+                  function (response) {
+                    showResponse(response);
+                  });
+
+
+
+
+            });
+
+            $('#takePhoto').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('takePhoto', null, function (response) {
+                    showResponse(response);
+                });
+            });
+
+            $('#scanQrcode').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('scanQrcode', null, function (response) {
+                    showResponse(response);
+                    alert(response);
+                });
+            });
+
+
+
+            $('#downloadFile').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('downloadFile',
+                {
+                    "fileURL": "http://cdn.qmuiteam.com/download/android/qmui_1.1.0.apk",
+                    "fileType": "internet",
+                    "fileName": "qmui_1.1.0.apk"
+                }, function (response) {
+                    showResponse(response);
+
+                });
+            });
+
+
+
+            $('#openWeb').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('openWeb',
+                {
+                    "url": "https://www.baidu.com/",
+                    "closeCurrUI": "false"
+                }, function (response) {
+                    showResponse(response);
+
+                });
+            });
+
+
+            $('#getLocation').click(function () {
+                // 通过JsBridge调用原生方法，写法固定，第一个参数时方法名，第二个参数时传入参数，第三个参数时响应回调
+                window.WebViewJavascriptBridge.callHandler('getLocation', null, function (response) {
+                    showResponse(response);
+                    alert(response);
+                });
+            });
+
+        })
+    });
+</script>
+</body>
+</html>
