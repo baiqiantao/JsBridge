@@ -61,7 +61,7 @@ public class MainActivity extends ListActivity {
 	class SimpleCallBackFunction implements CallBackFunction {
 		@Override
 		public void onCallBack(String data) {
-			Log.i("bqt", "【JS回调】，是否在主线程：" + (Looper.myLooper() == Looper.getMainLooper()) + "\n" + data);
+			Log.i("bqt", "【JS回调】，是否在主线程：" + (Looper.myLooper() == Looper.getMainLooper()) + "\n" + data);//true
 			//也可以用Thread.currentThread() == Looper.getMainLooper().getThread()
 		}
 	}
