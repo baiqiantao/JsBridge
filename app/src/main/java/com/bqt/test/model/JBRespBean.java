@@ -12,12 +12,12 @@ public class JBRespBean {
 	public static final String STATUS_FAILURE = "failure";
 	
 	public String status;
-	public String msg;
+	public long time;
 	public Object data;
 	
 	private JBRespBean(Builder builder) {
 		status = builder.status;
-		msg = builder.msg;
+		time = builder.time;
 		data = builder.data;
 	}
 	
@@ -27,7 +27,7 @@ public class JBRespBean {
 	
 	public static final class Builder {
 		private String status;
-		private String msg;
+		private long time;
 		private Object data;
 		
 		private Builder() {
@@ -38,8 +38,8 @@ public class JBRespBean {
 			return this;
 		}
 		
-		public Builder msg(String val) {
-			msg = val;
+		public Builder time(long val) {
+			time = val;
 			return this;
 		}
 		

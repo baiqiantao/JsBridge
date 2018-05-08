@@ -8,13 +8,8 @@ package com.bqt.test.model;
  * @date 2018/5/8 00:28 <p>
  */
 public class JBJsIDs {
-	
 	/**
-	 * 让JS调用Alert方法
+	 * 让JS在网页中显示传过去的内容
 	 */
-	public static final String BRIDGE_ID_ALERT = "showAlert";
-	/**
-	 * 让JS调用控制台打印日志
-	 */
-	public static final String BRIDGE_ID_CONSOLE = "console";
+	public static final String BRIDGE_ID_SHOWINHTML = "showInHtml";
 }

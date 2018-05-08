@@ -22,7 +22,7 @@ public class DefaultBridgeHandler implements BridgeHandler {
 	 */
 	@Override
 	public void handler(String data, CallBackFunction function) {
-		Log.i("bqt", "【默认的Handle】参数：" + data);
+		Log.i("bqt", "【默认的Handle，参数】" + data);
 		function.onCallBack(new Gson().toJson(JBRespBean.newBuilder().status(JBRespBean.STATUS_SUCCESS).build()));
 	}
 }

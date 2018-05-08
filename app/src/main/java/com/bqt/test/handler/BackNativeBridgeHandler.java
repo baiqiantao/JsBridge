@@ -1,6 +1,7 @@
 package com.bqt.test.handler;
 
 import android.app.Activity;
+import android.util.Log;
 
 import com.bqt.test.model.JBRespBean;
 import com.github.lzyzsd.jsbridge.BridgeHandler;
@@ -27,9 +28,12 @@ public class BackNativeBridgeHandler implements BridgeHandler {
 	 */
 	@Override
 	public void handler(String data, CallBackFunction function) {
+		Log.i("bqt", "【结束当前Activity，参数】" + data);
+		
 		mActivity.finish();
 		JBRespBean bridgeRespBean = JBRespBean.newBuilder()
 				.status(JBRespBean.STATUS_SUCCESS)
+				.time(System.currentTimeMillis())
 				.build();
 		
 		function.onCallBack(new Gson().toJson(bridgeRespBean));

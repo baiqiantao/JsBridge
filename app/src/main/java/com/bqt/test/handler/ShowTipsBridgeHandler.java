@@ -2,6 +2,7 @@ package com.bqt.test.handler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.bqt.test.model.JBRespBean;
@@ -32,6 +33,7 @@ public class ShowTipsBridgeHandler implements BridgeHandler {
 	 */
 	@Override
 	public void handler(String data, CallBackFunction function) {
+		Log.i("bqt", "【显示原生toast或弹窗，参数】" + data);
 		ParameterBean parameterBean = new Gson().fromJson(data, ParameterBean.class);
 		
 		if (TYPE_TOAST.equals(parameterBean.type)) {

@@ -26,13 +26,11 @@ public class MainActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mBridgeWebView = new BridgeWebView(this);
-		mBridgeWebView.loadUrl("file:///android_asset/jsbridge.html");
-		
-		getListView().addFooterView(mBridgeWebView);
 		registerHandler();
+		mBridgeWebView.loadUrl("file:///android_asset/jsbridge.html");
+		getListView().addFooterView(mBridgeWebView);
 		
-		String[] array = {"主动调用JS方法，让JS调用Alert方法",
-				"主动调用JS方法，让JS调用控制台打印日志",
+		String[] array = {"调用JS中的名为showInHtml的Handler",
 				"调用JS中的默认Handler，没有回调",
 				"调用JS中的默认Handler，有回调",};
 		setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>(Arrays.asList(array))));
@@ -49,16 +47,13 @@ public class MainActivity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		switch (position) {
 			case 0:
-				mBridgeWebView.callHandler(JBJsIDs.BRIDGE_ID_ALERT, "【包青天20094】", new SimpleCallBackFunction());
+				mBridgeWebView.callHandler(JBJsIDs.BRIDGE_ID_SHOWINHTML, "【包青天20094】", new SimpleCallBackFunction());
 				break;
 			case 1:
-				mBridgeWebView.callHandler(JBJsIDs.BRIDGE_ID_CONSOLE, "【包青天20095】", new SimpleCallBackFunction());
+				mBridgeWebView.send("【包青天20095】");
 				break;
 			case 2:
-				mBridgeWebView.send("【包青天20096】");
-				break;
-			case 3:
-				mBridgeWebView.send("【包青天20097】", new SimpleCallBackFunction());
+				mBridgeWebView.send("【包青天20096】", new SimpleCallBackFunction());
 				break;
 		}
 	}
@@ -66,7 +61,7 @@ public class MainActivity extends ListActivity {
 	class SimpleCallBackFunction implements CallBackFunction {
 		@Override
 		public void onCallBack(String data) {
-			Log.i("bqt", "【JS回调】，是否在主线程" + (Looper.myLooper() == Looper.getMainLooper()) + "\n" + data);
+			Log.i("bqt", "【JS回调】，是否在主线程：" + (Looper.myLooper() == Looper.getMainLooper()) + "\n" + data);
 			//也可以用Thread.currentThread() == Looper.getMainLooper().getThread()
 		}
 	}
